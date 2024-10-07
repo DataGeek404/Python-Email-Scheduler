@@ -19,3 +19,4 @@
 2024-10-07 22:44:44,195 ERROR:Error sending email: 'NoneType' object has no attribute 'encode'
 2024-10-07 22:48:50,524 INFO:Daily report email scheduler started.
 2024-10-07 22:49:52,295 ERROR:Error sending email: 'NoneType' object has no attribute 'encode'
+2024-10-07 22:55:12,372 INFO:Daily report email scheduler started.
