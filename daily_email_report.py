@@ -79,7 +79,7 @@ def send_daily_report():
     send_email_with_attachment(subject, body, to_email, cc_email, file_path)
 
 # Schedule the email to be sent every day at a specific time (e.g., 12:15 PM)
-schedule.every().day.at("22:05").do(send_daily_report)
+schedule.every().day.at("22:14").do(send_daily_report)
 
 # Run the scheduler in an infinite loop
 if __name__ == "__main__":
