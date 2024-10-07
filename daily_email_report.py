@@ -14,11 +14,11 @@ logging.basicConfig(filename='email_scheduler.log', level=logging.INFO,
 
 # Function to send the email with an attachment, including CC
 def send_email_with_attachment(subject, body, to_email, cc_email, file_path):
-    # Email settings
+    # Email settings (fetched from environment variables)
     smtp_server = 'smtp.gmail.com'
     smtp_port = 587
-    from_email = 'kibejay61@gmail.com'
-    from_password = 'wnpn tihx zgbx etiv'  # Use app password
+    from_email = os.environ.get('EMAIL_HOST_USER')
+    from_password = os.environ.get('EMAIL_HOST_PASSWORD')
 
     # Create the message
     msg = MIMEMultipart()
@@ -75,11 +75,13 @@ def send_daily_report():
     body = "Hello James, find the report below. This is your daily report.\n\n- Summary of tasks\n- Analytics overview\n- Progress report"
     to_email = "techspaceerror404@gmail.com"
     cc_email = "awanzihassan1@gmail.com"  # Add the CC email here
-    file_path = "C:\\Users\\lenovo\\PythonAutomation\\Reports\\jay.pdf"  # Replace with the actual path to your file
+    
+    # Use a relative path for the report
+    file_path = os.path.join("Reports", "jay.pdf")  # Ensure this file exists in the 'Reports' folder
     send_email_with_attachment(subject, body, to_email, cc_email, file_path)
 
 # Schedule the email to be sent every day at a specific time (e.g., 12:15 PM)
-schedule.every().day.at("22:14").do(send_daily_report)
+schedule.every().day.at("22:44").do(send_daily_report)
 
 # Run the scheduler in an infinite loop
 if __name__ == "__main__":
