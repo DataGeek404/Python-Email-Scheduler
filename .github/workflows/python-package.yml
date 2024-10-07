@@ -20,7 +20,7 @@ jobs:
       run: |
         curl https://cli-assets.heroku.com/install.sh | sh
 
-    - name: Deploy to Heroku
+    - name: Deploy to Herokuhub
 n master      run: |
         heroku login -i
         git remote add heroku https://git.heroku.com/your-heroku-app.git
