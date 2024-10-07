@@ -1,12 +1,9 @@
-# This workflow will install Python dependencies, run tests and lint with a variety of Python versions
-# For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-python
-
 name: Deploy to Heroku
 
 on:
   push:
     branches:
-      - master  # Or your main branch
+      - master
 
 jobs:
   deploy:
@@ -20,10 +17,10 @@ jobs:
       run: |
         curl https://cli-assets.heroku.com/install.sh | sh
 
-    - name: Deploy to Herokuhub
-n master      run: |
-        heroku login -i
-        git remote add heroku https://git.heroku.com/your-heroku-app.git
+    - name: Deploy to Heroku
+      run: |
+        heroku auth:token
+        git remote add heroku https://git.heroku.com/python-email-automation.git || git remote set-url heroku https://git.heroku.com/python-email-automation.git
         git push heroku master
       env:
-        HEROKU_API_KEY: ${{ secrets.HEROKU_API_KEY }}
+        HEROKU_API_KEY: $ {{ secrets.HEROKU_API_KEY }}
