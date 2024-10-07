@@ -17,8 +17,8 @@ def send_email_with_attachment(subject, body, to_email, cc_email, file_path):
     # Email settings (fetched from environment variables)
     smtp_server = 'smtp.gmail.com'
     smtp_port = 587
-    from_email = os.environ.get('EMAIL_HOST_USER')
-    from_password = os.environ.get('EMAIL_HOST_PASSWORD')
+    from_email = os.environ.get('kibejay61@gmail.com')
+    from_password = os.environ.get('wnpn tihx zgbx etiv')
 
     # Create the message
     msg = MIMEMultipart()
@@ -81,7 +81,7 @@ def send_daily_report():
     send_email_with_attachment(subject, body, to_email, cc_email, file_path)
 
 # Schedule the email to be sent every day at a specific time (e.g., 12:15 PM)
-schedule.every().day.at("22:44").do(send_daily_report)
+schedule.every().day.at("22:49").do(send_daily_report)
 
 # Run the scheduler in an infinite loop
 if __name__ == "__main__":
