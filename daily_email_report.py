@@ -12,8 +12,8 @@ import logging
 logging.basicConfig(filename='email_scheduler.log', level=logging.INFO,
                     format='%(asctime)s %(levelname)s:%(message)s')
 
-# Function to send the email with an attachment
-def send_email_with_attachment(subject, body, to_email, file_path):
+# Function to send the email with an attachment, including CC
+def send_email_with_attachment(subject, body, to_email, cc_email, file_path):
     # Email settings
     smtp_server = 'smtp.gmail.com'
     smtp_port = 587
@@ -24,6 +24,7 @@ def send_email_with_attachment(subject, body, to_email, file_path):
     msg = MIMEMultipart()
     msg['From'] = from_email
     msg['To'] = to_email
+    msg['Cc'] = cc_email  # Add CC here
     msg['Subject'] = subject
 
     # Attach the email body
@@ -54,10 +55,13 @@ def send_email_with_attachment(subject, body, to_email, file_path):
         server.starttls()  # Use TLS encryption
         server.login(from_email, from_password)  # Log into the email account
 
-        # Send the email
-        server.sendmail(from_email, to_email, msg.as_string())
-        logging.info(f'Email with attachment sent to {to_email}')
-        print(f'Email with attachment sent to {to_email}')
+        # Combine recipient and CC emails for sending
+        recipients = [to_email] + [cc_email] if cc_email else []
+
+        # Send the email to both To and CC recipients
+        server.sendmail(from_email, recipients, msg.as_string())
+        logging.info(f'Email with attachment sent to {to_email} and CCed to {cc_email}')
+        print(f'Email with attachment sent to {to_email} and CCed to {cc_email}')
 
         # Close the server connection
         server.quit()
@@ -70,12 +74,12 @@ def send_daily_report():
     subject = "Daily Report with Attachment"
     body = "Hello James, find the report below. This is your daily report.\n\n- Summary of tasks\n- Analytics overview\n- Progress report"
     to_email = "techspaceerror404@gmail.com"
-    file_path = "C:\\Users\\lenovo\\PythonAutomation\\Reports\\jay.pdf"
-  # Replace with the actual path to your file
-    send_email_with_attachment(subject, body, to_email, file_path)
+    cc_email = "awanzihassan1@gmail.com"  # Add the CC email here
+    file_path = "C:\\Users\\lenovo\\PythonAutomation\\Reports\\jay.pdf"  # Replace with the actual path to your file
+    send_email_with_attachment(subject, body, to_email, cc_email, file_path)
 
-# Schedule the email to be sent every day at a specific time (e.g., 11:14 AM)
-schedule.every().day.at("11:51").do(send_daily_report)
+# Schedule the email to be sent every day at a specific time (e.g., 12:15 PM)
+schedule.every().day.at("13:30").do(send_daily_report)
 
 # Run the scheduler in an infinite loop
 if __name__ == "__main__":
