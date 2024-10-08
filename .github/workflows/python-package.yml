@@ -3,7 +3,7 @@ name: Deploy to Heroku
 on:
   push:
     branches:
-      - master
+      - master  # Or your main branch
 
 jobs:
   deploy:
@@ -17,10 +17,14 @@ jobs:
       run: |
         curl https://cli-assets.heroku.com/install.sh | sh
 
-    - name: Deploy to Heroku
-      run: |
-        heroku auth:token
-        git remote add heroku https://git.heroku.com/python-email-automation.git || git remote set-url heroku https://git.heroku.com/python-email-automation.git
-        git push heroku master
+    - name: Authenticate with Heroku
+      run: echo ${{ secrets.HEROKU_API_KEY }} | heroku auth:token
       env:
-        HEROKU_API_KEY: $ {{ secrets.HEROKU_API_KEY }}
+        HEROKU_API_KEY: ${{ secrets.HEROKU_API_KEY }}
+
+    - name: Set Heroku Git Remote
+      run: |
+        git remote heroku to https://git.heroku.com/python-email-automation.git
+
+    - name: Deploy to Heroku
+      run: git push heroku master
