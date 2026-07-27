@@ -1,0 +1,10 @@
+{% extends "base.html" %}
+{% block title %}Deliveries · MailOps{% endblock %}
+{% block heading %}Delivery history{% endblock %}
+{% block content %}
+<section class="panel">
+  <div class="panel-heading"><div><p class="eyebrow">SMTP outcomes</p><h2>Latest {{ deliveries|length }} attempts</h2></div></div>
+  <div class="table-wrap"><table><thead><tr><th>Completed</th><th>Status</th><th>Source</th><th>Recipients</th><th>Attachment</th><th>Error</th></tr></thead>
+  <tbody>{% for item in deliveries %}<tr><td class="nowrap">{{ item.completed_at|display_time }}</td><td><span class="pill {{ item.status }}">{{ item.status }}</span></td><td>{{ item.source }}</td><td>{{ item.to_count }} To · {{ item.cc_count }} CC</td><td>{{ item.attachment }}</td><td class="message-cell">{{ item.error or '—' }}</td></tr>{% else %}<tr><td colspan="6" class="empty">No delivery attempts recorded.</td></tr>{% endfor %}</tbody></table></div>
+</section>
+{% endblock %}

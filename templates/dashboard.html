@@ -1,0 +1,83 @@
+{% extends "base.html" %}
+{% block title %}Overview · MailOps{% endblock %}
+{% block heading %}Operations overview{% endblock %}
+{% block content %}
+<section class="hero-status">
+  <div>
+    <p class="eyebrow">Worker status</p>
+    <div class="status-title"><span class="status-dot {{ worker_health.status }}"></span><h2 id="worker-label">{{ worker_health.label }}</h2></div>
+    <p class="muted">Next delivery <strong id="next-run">{{ state.next_run|display_time if state else 'Not scheduled' }}</strong></p>
+  </div>
+  <div class="hero-meta">
+    <span>PID <strong>{{ state.pid if state else '—' }}</strong></span>
+    <span>Timezone <strong>{{ state.timezone_name if state else '—' }}</strong></span>
+    <span>Updated <strong id="updated-at">{{ state.updated_at|display_time if state else '—' }}</strong></span>
+  </div>
+</section>
+
+<section class="metrics-grid">
+  <article class="metric"><span>Deliveries · 24h</span><strong>{{ stats.total_24h }}</strong><small>All attempts</small></article>
+  <article class="metric success"><span>Successful · 24h</span><strong>{{ stats.success_24h }}</strong><small>Accepted by SMTP</small></article>
+  <article class="metric danger"><span>Failed · 24h</span><strong>{{ stats.failed_24h }}</strong><small>Needs attention</small></article>
+  <article class="metric"><span>Pending actions</span><strong>{{ stats.pending_commands }}</strong><small>Queued or running</small></article>
+</section>
+
+<section class="content-grid">
+  <article class="panel action-panel">
+    <div class="panel-heading"><div><p class="eyebrow">Remote control</p><h2>Admin actions</h2></div></div>
+    <p class="muted">Actions are securely queued and executed by the worker. SMTP credentials never enter the web process.</p>
+    <div class="action-grid">
+      {% for action, label, note, style in [
+        ('send_now', 'Send report now', 'Perform a real delivery', 'primary'),
+        ('dry_run', 'Build dry run', 'Validate MIME and attachment', ''),
+        ('check_smtp', 'Check SMTP', 'Authenticate without sending', ''),
+        ('check_config', 'Check configuration', 'Validate settings and report', ''),
+        ('pause', 'Pause schedule', 'Skip scheduled sends', 'warning'),
+        ('resume', 'Resume schedule', 'Enable scheduled sends', 'success')
+      ] %}
+      <form action="{{ url_for('queue_action', action=action) }}" method="post" data-confirm="Queue action: {{ label }}?">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+        <button class="action-button {{ style }}" type="submit"><strong>{{ label }}</strong><small>{{ note }}</small></button>
+      </form>
+      {% endfor %}
+    </div>
+  </article>
+
+  <article class="panel modules-panel">
+    <div class="panel-heading"><div><p class="eyebrow">System map</p><h2>Modules</h2></div></div>
+    <div class="module-list">
+      {% for module in modules %}
+      <div class="module-row"><span class="status-dot {{ module.status }}"></span><strong>{{ module.name }}</strong><small>{{ module.label }}</small></div>
+      {% endfor %}
+    </div>
+    {% if config %}
+    <div class="runtime-config">
+      <span>SMTP<strong>{{ config.smtp_host }}:{{ config.smtp_port }}</strong></span>
+      <span>Security<strong>{{ config.smtp_security }}</strong></span>
+      <span>Recipients<strong>{{ config.recipient_count }} To · {{ config.cc_count }} CC</strong></span>
+      <span>Attachment<strong title="{{ config.attachment }}">{{ config.attachment|truncate(30) }}</strong></span>
+    </div>
+    {% endif %}
+    {% if state and state.last_error %}<div class="error-box"><strong>Last error</strong><p>{{ state.last_error }}</p></div>{% endif %}
+  </article>
+</section>
+
+<section class="content-grid equal">
+  <article class="panel">
+    <div class="panel-heading"><div><p class="eyebrow">Recent activity</p><h2>Event stream</h2></div><a href="{{ url_for('logs') }}">View all</a></div>
+    <div class="event-list">
+      {% for event in events %}
+      <div class="event"><span class="level {{ event.level|lower }}">{{ event.level }}</span><div><strong>{{ event.module }}</strong><p>{{ event.message }}</p></div><time>{{ event.created_at|display_time }}</time></div>
+      {% else %}<p class="empty">No events recorded yet.</p>{% endfor %}
+    </div>
+  </article>
+  <article class="panel">
+    <div class="panel-heading"><div><p class="eyebrow">Delivery ledger</p><h2>Latest reports</h2></div><a href="{{ url_for('deliveries') }}">View all</a></div>
+    <div class="compact-table">
+      {% for delivery in deliveries %}
+      <div><span class="pill {{ delivery.status }}">{{ delivery.status }}</span><strong>{{ delivery.source }}</strong><time>{{ delivery.completed_at|display_time }}</time></div>
+      {% else %}<p class="empty">No deliveries recorded yet.</p>{% endfor %}
+    </div>
+  </article>
+</section>
+{% endblock %}

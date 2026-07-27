@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% block title %}MailOps Admin{% endblock %}</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='admin.css') }}">
+</head>
+<body class="{% if not session.get('authenticated') %}auth-page{% endif %}">
+  {% if session.get('authenticated') %}
+  <aside class="sidebar" id="sidebar">
+    <a class="brand" href="{{ url_for('dashboard') }}">
+      <span class="brand-mark">M</span>
+      <span><strong>MailOps</strong><small>Control center</small></span>
+    </a>
+    <nav aria-label="Admin navigation">
+      <a class="nav-link {% if request.endpoint == 'dashboard' %}active{% endif %}" href="{{ url_for('dashboard') }}">Overview</a>
+      <a class="nav-link {% if request.endpoint == 'logs' %}active{% endif %}" href="{{ url_for('logs') }}">Event logs</a>
+      <a class="nav-link {% if request.endpoint == 'deliveries' %}active{% endif %}" href="{{ url_for('deliveries') }}">Deliveries</a>
+      <a class="nav-link {% if request.endpoint == 'commands' %}active{% endif %}" href="{{ url_for('commands') }}">Admin actions</a>
+    </nav>
+    <div class="sidebar-footer">
+      <span class="user-chip">{{ session.get('username', 'admin') }}</span>
+      <form action="{{ url_for('logout') }}" method="post">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+        <button class="text-button" type="submit">Sign out</button>
+      </form>
+    </div>
+  </aside>
+  {% endif %}
+
+  <main class="{% if session.get('authenticated') %}main-content{% else %}auth-content{% endif %}">
+    {% if session.get('authenticated') %}
+    <header class="topbar">
+      <button class="menu-button" type="button" data-sidebar-toggle aria-label="Toggle navigation">☰</button>
+      <div>
+        <p class="eyebrow">Python Email Scheduler</p>
+        <h1>{% block heading %}Operations{% endblock %}</h1>
+      </div>
+      <div class="live-indicator"><span></span> Live monitoring</div>
+    </header>
+    {% endif %}
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+      <div class="flash-stack">
+        {% for category, message in messages %}
+          <div class="flash {{ category }}">{{ message }}</div>
+        {% endfor %}
+      </div>
+      {% endif %}
+    {% endwith %}
+
+    {% block content %}{% endblock %}
+  </main>
+  <script src="{{ url_for('static', filename='admin.js') }}" defer></script>
+</body>
+</html>

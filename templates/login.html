@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+{% block title %}Sign in · MailOps{% endblock %}
+{% block content %}
+<section class="login-shell">
+  <div class="login-visual">
+    <span class="brand-mark large">M</span>
+    <p class="eyebrow">Secure operations</p>
+    <h1>Know what your mail worker is doing.</h1>
+    <p>Monitor every delivery, inspect every event, and control the scheduler from one protected console.</p>
+    <div class="signal-lines" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
+  </div>
+  <div class="login-card">
+    <p class="eyebrow">Administrator access</p>
+    <h2>Welcome back</h2>
+    <p class="muted">Enter your Render dashboard credentials.</p>
+    {% if rate_limited %}<div class="flash error">Too many attempts. Try again in 15 minutes.</div>{% endif %}
+    <form method="post" class="stack-form">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+      <label>Username<input name="username" autocomplete="username" required autofocus></label>
+      <label>Password<input name="password" type="password" autocomplete="current-password" required></label>
+      <button class="button primary wide" type="submit" {% if rate_limited %}disabled{% endif %}>Sign in securely</button>
+    </form>
+  </div>
+</section>
+{% endblock %}

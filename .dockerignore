@@ -1,0 +1,11 @@
+.git
+.github
+.env
+.venv
+__pycache__
+*.pyc
+*.log
+email_scheduler_status.json
+scheduler_monitor.db*
+tests
+get-pip.py

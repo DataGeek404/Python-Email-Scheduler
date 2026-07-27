@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+{% block title %}Event logs · MailOps{% endblock %}
+{% block heading %}Event logs{% endblock %}
+{% block content %}
+<section class="panel">
+  <div class="panel-heading"><div><p class="eyebrow">Searchable audit trail</p><h2>{{ total }} events</h2></div><a class="button" href="{{ url_for('download_logs', **filters) }}">Download CSV</a></div>
+  <form class="filter-bar" method="get">
+    <label>Search<input name="search" value="{{ filters.search }}" placeholder="Message text"></label>
+    <label>Level<select name="level"><option value="">All levels</option>{% for level in levels %}<option value="{{ level }}" {% if filters.level == level %}selected{% endif %}>{{ level }}</option>{% endfor %}</select></label>
+    <label>Module<select name="module"><option value="">All modules</option>{% for module in modules %}<option value="{{ module }}" {% if filters.module == module %}selected{% endif %}>{{ module }}</option>{% endfor %}</select></label>
+    <button class="button primary" type="submit">Apply filters</button><a class="button" href="{{ url_for('logs') }}">Reset</a>
+  </form>
+  <div class="table-wrap">
+    <table><thead><tr><th>Time</th><th>Level</th><th>Module</th><th>Message</th></tr></thead>
+    <tbody>{% for event in events %}<tr><td class="nowrap">{{ event.created_at|display_time }}</td><td><span class="level {{ event.level|lower }}">{{ event.level }}</span></td><td>{{ event.module }}</td><td class="message-cell">{{ event.message }}</td></tr>{% else %}<tr><td colspan="4" class="empty">No events match these filters.</td></tr>{% endfor %}</tbody></table>
+  </div>
+  <nav class="pagination"><span>Page {{ page }} of {{ pages }}</span><div>{% if page > 1 %}<a class="button" href="{{ url_for('logs', page=page-1, **filters) }}">Previous</a>{% endif %}{% if page < pages %}<a class="button" href="{{ url_for('logs', page=page+1, **filters) }}">Next</a>{% endif %}</div></nav>
+</section>
+{% endblock %}

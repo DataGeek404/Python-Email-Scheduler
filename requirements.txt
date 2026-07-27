@@ -1,1 +1,5 @@
-# This project uses only the Python standard library.
+# IANA timezone database for Windows and minimal container images.
+tzdata>=2024.1
+Flask>=3.1,<4
+gunicorn>=23,<24
+psycopg[binary]>=3.2,<4

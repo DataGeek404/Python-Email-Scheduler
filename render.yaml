@@ -1,0 +1,83 @@
+databases:
+  - name: email-scheduler-db
+    databaseName: email_scheduler
+    user: email_scheduler
+    plan: basic-256mb
+
+services:
+  - type: web
+    name: email-scheduler-admin
+    runtime: python
+    plan: starter
+    buildCommand: python -m pip install --upgrade pip && python -m pip install -r requirements.txt
+    startCommand: gunicorn "admin_dashboard:create_app()" --bind 0.0.0.0:$PORT --workers 2 --threads 4 --timeout 60 --access-logfile - --error-logfile -
+    healthCheckPath: /healthz
+    autoDeploy: true
+    envVars:
+      - key: DATABASE_URL
+        fromDatabase:
+          name: email-scheduler-db
+          property: connectionString
+      - key: ADMIN_USERNAME
+        value: admin
+      - key: ADMIN_PASSWORD
+        sync: false
+      - key: ADMIN_SECRET_KEY
+        generateValue: true
+      - key: PYTHONUNBUFFERED
+        value: "1"
+
+  - type: worker
+    name: email-scheduler-worker
+    runtime: python
+    plan: starter
+    buildCommand: python -m pip install --upgrade pip && python -m pip install -r requirements.txt
+    startCommand: python -u daily_email_report.py
+    autoDeploy: true
+    envVars:
+      - key: DATABASE_URL
+        fromDatabase:
+          name: email-scheduler-db
+          property: connectionString
+      - key: MONITORING_REQUIRED
+        value: "true"
+      - key: EMAIL_HOST
+        value: smtp.gmail.com
+      - key: EMAIL_SECURITY
+        value: starttls
+      - key: EMAIL_PORT
+        value: "587"
+      - key: EMAIL_HOST_USER
+        sync: false
+      - key: EMAIL_HOST_PASSWORD
+        sync: false
+      - key: EMAIL_FROM
+        sync: false
+      - key: EMAIL_TO
+        sync: false
+      - key: EMAIL_CC
+        sync: false
+      - key: REPORT_TIME
+        value: "08:30"
+      - key: REPORT_TIMEZONE
+        value: Africa/Nairobi
+      - key: REPORT_ATTACHMENT
+        value: Reports/jay.pdf
+      - key: EMAIL_SUBJECT
+        value: Daily Report with Attachment
+      - key: EMAIL_RETRIES
+        value: "2"
+      - key: EMAIL_RETRY_BASE_SECONDS
+        value: "2"
+      - key: EMAIL_MAX_ATTACHMENT_MB
+        value: "18"
+      - key: EMAIL_LOG_FILE
+        value: "-"
+      - key: EMAIL_LOG_CONSOLE
+        value: "true"
+      - key: SCHEDULER_POLL_SECONDS
+        value: "5"
+      - key: SCHEDULER_HEARTBEAT_SECONDS
+        value: "30"
+      - key: PYTHONUNBUFFERED
+        value: "1"

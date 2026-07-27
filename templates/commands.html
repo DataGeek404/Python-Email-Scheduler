@@ -1,0 +1,10 @@
+{% extends "base.html" %}
+{% block title %}Admin actions · MailOps{% endblock %}
+{% block heading %}Admin action history{% endblock %}
+{% block content %}
+<section class="panel">
+  <div class="panel-heading"><div><p class="eyebrow">Audited command queue</p><h2>Latest {{ commands|length }} actions</h2></div></div>
+  <div class="table-wrap"><table><thead><tr><th>Requested</th><th>Action</th><th>Status</th><th>Administrator</th><th>Completed</th><th>Result</th><th></th></tr></thead>
+  <tbody>{% for command in commands %}<tr><td class="nowrap">{{ command.requested_at|display_time }}</td><td><strong>{{ command.action|replace('_', ' ') }}</strong></td><td><span class="pill {{ command.status }}">{{ command.status }}</span></td><td>{{ command.requested_by }}</td><td class="nowrap">{{ command.completed_at|display_time }}</td><td class="message-cell">{{ command.result or 'Waiting for worker' }}</td><td>{% if command.status == 'queued' %}<form action="{{ url_for('cancel_command', command_id=command.id) }}" method="post" data-confirm="Cancel command #{{ command.id }}?"><input type="hidden" name="csrf_token" value="{{ csrf_token() }}"><button class="text-button" type="submit">Cancel</button></form>{% endif %}</td></tr>{% else %}<tr><td colspan="7" class="empty">No admin actions have been queued.</td></tr>{% endfor %}</tbody></table></div>
+</section>
+{% endblock %}
